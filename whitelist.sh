@@ -11,13 +11,17 @@ APP="YourAppName"
 if [ ! "$(gsettings get $SCHEMA $OBJECT 2>/dev/null || echo FALSE)" = "FALSE" ]; then
   echo "Checking if $APP is whitelisted in Unity system-tray"
   OBJARRAY=$(sudo -u $CURRENT_USER gsettings get $SCHEMA $OBJECT | sed -s -e "s#\['##g" -e "s#', '# #g" -e "s#'\]##g")
-  if [[ "${OBJARRAY[@]}" =~ "$APP" ]]; then
-    echo "$APP already whitelisted, skipping"
+  if [ "$OBJARRAY" = "all" ]; then
+    echo "Whitelist is set to 'all', no need to add anything"
   else
-    echo "$APP not whitelisted, let's whitelist"
-    OBJARRAY=("${OBJARRAY[@]}" $APP)
-    OBJARRAY=$(echo ${OBJARRAY[@]} | sed -s -e "s# #', '#g")
-    OBJSET="['"$OBJARRAY"']"
-    sudo -u $CURRENT_USER gsettings set $SCHEMA $OBJECT "$OBJSET"
+    if [[ "${OBJARRAY[@]}" =~ "$APP" ]]; then
+      echo "$APP already whitelisted, skipping"
+    else
+      echo "$APP not whitelisted, let's whitelist"
+      OBJARRAY=("${OBJARRAY[@]}" $APP)
+      OBJARRAY=$(echo ${OBJARRAY[@]} | sed -s -e "s# #', '#g")
+      OBJSET="['"$OBJARRAY"']"
+      sudo -u $CURRENT_USER gsettings set $SCHEMA $OBJECT "$OBJSET"
+    fi
   fi
 fi
