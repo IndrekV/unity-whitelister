@@ -9,7 +9,7 @@ APP="YourAppName"
 
 # Let's check if the user uses Unity
 if [ ! "$(gsettings get $SCHEMA $OBJECT 2>/dev/null || echo FALSE)" = "FALSE" ]; then
-  echo "Whitelisting $APP to work with Unity system-tray"
+  echo "Checking if $APP is whitelisted in Unity system-tray"
   OBJARRAY=$(sudo -u $CURRENT_USER gsettings get $SCHEMA $OBJECT | sed -s -e "s#\['##g" -e "s#', '# #g" -e "s#'\]##g")
   if [[ "${OBJARRAY[@]}" =~ "$APP" ]]; then
     echo "$APP already whitelisted, skipping"
